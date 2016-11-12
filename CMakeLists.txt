@@ -4,7 +4,21 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+function( create_test TESTNAME ADDITIONAL_FILES ADDITIONAL_LIBRARIES )
+    add_executable( ${TESTNAME}
+        ${TESTNAME}.cpp
+        ${ADDITIONAL_FILES} )
+
+    target_link_libraries( ${TESTNAME}
+        gtest
+        gtest_main
+        ${ADDITIONAL_LIBRARIES} )
+
+    add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
+endfunction()
 
 project (itertest)
 enable_testing()
+
 add_subdirectory(src)
+add_subdirectory(lib)
