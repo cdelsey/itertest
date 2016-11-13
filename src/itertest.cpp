@@ -7,6 +7,7 @@
 using namespace std;
 
 template <class T> T pairwise_reduce(vector<T>& c);
+template <class T> T fold_in_half_reduce(vector<T>& c);
 
 int concatenate(int a, int b) { return a+b; }
 
@@ -25,11 +26,11 @@ int main(int argc, char* argv[]) {
         cout << i;
     cout << '\n';
     
-    cout << pairwise_reduce(cam);
+    cout << fold_in_half_reduce(cam) << '\n';
     return 0;
 }
 
-template <class T> T pairwise_reduce(vector<T>& c) {
+template <class T> T fold_in_half_reduce(vector<T>& c) {
   int length = c.size();
   if (length == 1)
     return c[0];
@@ -37,7 +38,8 @@ template <class T> T pairwise_reduce(vector<T>& c) {
     int newsize = length/2;
     vector<T> output(newsize);
     transform(mid(c), end(c), begin(c), begin(output), concatenate);
-    return pairwise_reduce(output);
+    
+    return fold_in_half_reduce(output);
   }
 }
 
