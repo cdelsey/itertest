@@ -8,5 +8,7 @@ NUMJOBS=$(expr `nproc` \* 2)
 set -e
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
+export CC=clang
+export CXX=clang++
 cmake -DCMAKE_BUILD_TYPE=Debug $SRC_DIR
 make -j${NUMJOBS} $1
