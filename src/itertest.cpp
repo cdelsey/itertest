@@ -4,6 +4,9 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/iterator/filter_iterator.hpp>
+#include <boost/range/adaptor/strided.hpp>
+#include <boost/range/adaptor/sliced.hpp>
+#include <boost/range/algorithm/transform.hpp>
 #include "itertest.h"
 
 using namespace std;
@@ -11,6 +14,7 @@ using namespace std;
 template <class T> T pairwise_reduce(vector<T>& c);
 template <class T> T fold_in_half_reduce(vector<T>& c);
 template <class T> T filter_pairwise_reduce(vector<T>& c);
+template <class T> T strided_pairwise_reduce(vector<T>& c);
 
 int concatenate(int a, int b) { return a+b; }
 
@@ -29,8 +33,9 @@ int main(int argc, char* argv[]) {
         cout << i;
     cout << '\n';
     
-    cout << fold_in_half_reduce(cam) << '\n';
-    cout << filter_pairwise_reduce(cam) << '\n';
+    cout << "Fold in half\t\t" << fold_in_half_reduce(cam) << '\n';
+    cout << "Filtered\t\t" << filter_pairwise_reduce(cam) << '\n';
+    cout << "Strided\t\t" << strided_pairwise_reduce(cam) << '\n';
     return 0;
 }
 
@@ -61,3 +66,17 @@ template <class T> T filter_pairwise_reduce(vector<T>& c) {
     return filter_pairwise_reduce(output);
   }
 }
+
+template <class T> T strided_pairwise_reduce(vector<T>& c) {
+  int length = c.size();
+  if (length == 1)
+    return c[0];
+  else {
+    int newsize = length/2;
+    vector<T> output(newsize);
+    boost::transform(c | boost::adaptors::strided(2), c | boost::adaptors::sliced(1, length) | boost::adaptors::strided(2), begin(output), concatenate);
+    
+    return strided_pairwise_reduce(output);
+  }
+}
+
