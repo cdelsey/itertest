@@ -15,6 +15,7 @@ template <class T> T pairwise_reduce(vector<T>& c);
 template <class T> T fold_in_half_reduce(vector<T>& c);
 template <class T> T filter_pairwise_reduce(vector<T>& c);
 template <class T> T strided_pairwise_reduce(vector<T>& c);
+template <class T> T strided_std_pairwise_reduce(vector<T>& c);
 
 int concatenate(int a, int b) { return a+b; }
 
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]) {
     cout << "Fold in half\t\t" << fold_in_half_reduce(cam) << '\n';
     cout << "Filtered\t\t" << filter_pairwise_reduce(cam) << '\n';
     cout << "Strided\t\t" << strided_pairwise_reduce(cam) << '\n';
+    cout << "Strided:std\t\t" << strided_std_pairwise_reduce(cam) << '\n';
     return 0;
 }
 
@@ -75,6 +77,21 @@ template <class T> T strided_pairwise_reduce(vector<T>& c) {
     int newsize = length/2;
     vector<T> output(newsize);
     boost::transform(c | boost::adaptors::strided(2), c | boost::adaptors::sliced(1, length) | boost::adaptors::strided(2), begin(output), concatenate);
+    
+    return strided_pairwise_reduce(output);
+  }
+}
+
+template <class T> T strided_std_pairwise_reduce(vector<T>& c) {
+  int length = c.size();
+  if (length == 1)
+    return c[0];
+  else {
+    int newsize = length/2;
+    vector<T> output(newsize);
+    auto evens = c | boost::adaptors::strided(2);
+    auto odds = c | boost::adaptors::sliced(1, length) | boost::adaptors::strided(2);
+    transform(begin(evens), end(evens), begin(odds), begin(output), concatenate);
     
     return strided_pairwise_reduce(output);
   }
